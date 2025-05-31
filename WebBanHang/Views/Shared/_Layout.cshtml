@@ -20,24 +20,42 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Manage Products</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Product" asp-action="Index">Manage Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Manage Categories</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Category" asp-action="Index">Manage Categories</a>
                         </li>
+
+                        @* THÊM ĐIỀU HƯỚNG THEO ROLE *@
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning fw-bold" asp-area="Admin" asp-controller="AdminHome" asp-action="Index">Trang quản trị</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Employee"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-info fw-bold" asp-area="Employee" asp-controller="EmployeeHome" asp-action="Index">Trang nhân viên</a>
+                                </li>
+                            }
+                        }
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mt-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

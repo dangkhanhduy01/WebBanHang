@@ -9,9 +9,11 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebBanHang.Controllers
 {
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _db;

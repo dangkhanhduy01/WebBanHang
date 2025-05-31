@@ -29,7 +29,7 @@ namespace WebBanHang
             services.AddControllersWithViews();
             services.AddDbContext<ApplicationDbContext>(
             options => options.UseSqlServer("name=TestDB"));
-            services.AddDefaultIdentity<ApplicationUser>()
+            services.AddDefaultIdentity<ApplicationUser>().AddRoles<IdentityRole>()
       .AddEntityFrameworkStores<ApplicationDbContext>();
         }
 

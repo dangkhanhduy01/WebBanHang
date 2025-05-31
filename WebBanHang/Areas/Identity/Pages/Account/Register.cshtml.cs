@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using WebBanHang.Models;
@@ -24,17 +25,21 @@ namespace WebBanHang.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public List<SelectListItem> RoleList { get; set; }
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
+             RoleManager<IdentityRole> roleManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -57,37 +62,65 @@ namespace WebBanHang.Areas.Identity.Pages.Account
             [Display(Name = "Password")]
             public string Password { get; set; }
 
+            [Required]
+            [Display(Name = "Vai trò")]
+            public string Role { get; set; }
+
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+
+
             public string ConfirmPassword { get; set; }
             public string FullName { get; set; }
             public DateTime BirthDay { get; set; }
+       
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+          
+            if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))
+                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
+            if (!await _roleManager.RoleExistsAsync(SD.Role_Customer))
+                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer));
+            if (!await _roleManager.RoleExistsAsync(SD.Role_Employee))
+                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Employee));
+
+         
+            RoleList = new List<SelectListItem>
+    {
+        new SelectListItem { Value = SD.Role_Customer, Text = "Khách hàng" },
+        new SelectListItem { Value = SD.Role_Employee, Text = "Nhân viên" },
+        new SelectListItem { Value = SD.Role_Admin, Text = "Quản trị viên" }
+    };
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
-                    fullName = Input.FullName,
+                    fullName = Input.FullName, 
                     Birthday = Input.BirthDay
                 };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                 
+                    await _userManager.AddToRoleAsync(user, Input.Role);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -110,14 +143,24 @@ namespace WebBanHang.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
+
+             
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+         
+            RoleList = new List<SelectListItem>
+    {
+        new SelectListItem { Value = SD.Role_Customer, Text = "Khách hàng" },
+        new SelectListItem { Value = SD.Role_Employee, Text = "Nhân viên" },
+        new SelectListItem { Value = SD.Role_Admin, Text = "Quản trị viên" }
+    };
+
             return Page();
         }
+
     }
 }

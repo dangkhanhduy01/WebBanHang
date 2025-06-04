@@ -7,13 +7,19 @@
         {
             <div class="col-md-4 mb-3">
                 <div class="card h-100 text-center">
-                    @if (!string.IsNullOrEmpty(p.ImageUrl))
-                    {
-                    <img src="@Url.Content("~/images/" + p.ImageUrl)" class="img-fluid mb-2" style="height: 180px; object-fit: cover;" alt="@p.Name" />
-                    }
+                    <img src="@Url.Content("~/images/" + (string.IsNullOrEmpty(p.ImageUrl) ? "noimage.png" : p.ImageUrl))"
+                         class="img-fluid mb-2"
+                         style="height: 180px; object-fit: cover;"                       
+                         alt="@p.Name" />
+
                     <div class="card-body">
                         <h5 class="card-title">@p.Name</h5>
                         <p class="text-danger">Price: @p.Price.ToString("N0") đ</p>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-center gap-2">
+                        <a href="/Customer/Product/Details/@p.Id" class="btn btn-sm btn-outline-info">Chi tiết</a>
+                        <a href="/Customer/Cart/AddToCart/@p.Id" class="btn btn-sm btn-outline-primary">Thêm vào giỏ</a>
                     </div>
                 </div>
             </div>

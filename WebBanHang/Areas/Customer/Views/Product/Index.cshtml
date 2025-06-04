@@ -1,0 +1,57 @@
+﻿@model List<WebBanHang.Models.Product>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <h5>DANH MỤC</h5>
+        <div id="Category-List"></div>
+    </div>
+
+    <div class="col-md-9">
+        <h5 id="Category-Title">Tất cả sản phẩm</h5>
+        <div id="Product-List">
+            <partial name="_ProductPartial" model="Model" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#Category-List").load("/Customer/Product/GetCategory", function () {
+                $(".category-link").click(function (e) {
+                    e.preventDefault();
+                    const id = $(this).data("id");
+                    const name = $(this).data("name");
+
+                    $("#Category-Title").text(name);
+
+                    $.get("/Customer/Product/GetProductsByCategory", { catid: id }, function (data) {
+                        $("#Product-List").html(data);
+                    });
+                });
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        $("#Category-List").load("/Customer/Product/GetCategory", function () {
+            $(".category-link").click(function (e) {
+                e.preventDefault();
+                const id = $(this).data("id");
+                const name = $(this).data("name");
+
+                $("#Category-Title").text(name);
+
+                $.get("/Customer/Product/GetProductsByCategory", { catid: id }, function (data) {
+                    $("#Product-List").html(data);
+                });
+            });
+        });
+    });
+</script>
+

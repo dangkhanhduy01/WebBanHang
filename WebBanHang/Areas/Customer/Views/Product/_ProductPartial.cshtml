@@ -1,0 +1,26 @@
+﻿@model List<WebBanHang.Models.Product>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="row">
+        @foreach (var p in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 text-center">
+                    @if (!string.IsNullOrEmpty(p.ImageUrl))
+                    {
+                    <img src="@Url.Content("~/images/" + p.ImageUrl)" class="img-fluid mb-2" style="height: 180px; object-fit: cover;" alt="@p.Name" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="text-danger">Price: @p.Price.ToString("N0") đ</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted">Không có sản phẩm nào trong danh mục này.</p>
+}
